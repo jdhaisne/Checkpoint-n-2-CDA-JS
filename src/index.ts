@@ -1,6 +1,6 @@
-import 'reflect-metadata';
 
-import CountryResolver from './resolvers/Country.resolver'
+import CountryResolver from './resolvers/Country.resolver';
+import datasource from './lib/datasource';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
@@ -10,14 +10,12 @@ import http from 'http';
 import cors from 'cors';
 import { buildSchema } from 'type-graphql';
 import { startStandaloneServer } from '@apollo/server/standalone';
-import datasource from './lib/datasource';
-import helmet from 'helmet';
-
-
+import 'reflect-metadata';
+import { jwtVerify } from "jose";
+import Cookies from "cookies"
 export interface MyContext {
 	req: express.Request;
   	res: express.Response;
-
 }
 
 export interface Payload {
@@ -25,10 +23,7 @@ export interface Payload {
   }
 
 const app = express();
-
 const httpServer = http.createServer(app);
-
-
 
 async function main() {
 	const schema = await buildSchema({
@@ -43,8 +38,12 @@ async function main() {
 	app.use(
 		'/',
 		cors<cors.CorsRequest>({ origin: '*' }),
+		express.json(),
+		expressMiddleware(server, {context: async ({ req, res }) => {
+			return { req, res, };
+		  },})
 	);
-    await datasource.initialize();
+	await datasource.initialize();
 	await new Promise<void>((resolve) =>
 		httpServer.listen({ port: 4000 }, resolve)
 	);

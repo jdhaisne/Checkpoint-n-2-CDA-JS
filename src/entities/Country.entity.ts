@@ -8,6 +8,7 @@ import {
 import { Field, ID, InputType,  ObjectType } from 'type-graphql';
 
 @ObjectType()
+@Entity()
 export default class Country {
   @Field(type => ID)
   @PrimaryGeneratedColumn()
@@ -25,6 +26,10 @@ export default class Country {
   @Column()
   emoji: string;
 
+  @Field({ nullable: true })
+  @Column()
+  continent: string
+
 }
 
 @InputType()
@@ -35,4 +40,6 @@ export class CreateCountryInput {
 	code: string
 	@Field({nullable: true})
 	emoji: string
+  @Field({nullable: true})
+	continent: string
 }

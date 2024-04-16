@@ -8,6 +8,6 @@ export default new DataSource({
 	password: 'postgres',
 	database: 'checkpoint2',
 	synchronize: true,
-	entities: ['src/entities/*.ts'],
+	entities: [__dirname + '/../**/*.entity.{js,ts}'],
 	logging: ['query', 'error'],
 });
